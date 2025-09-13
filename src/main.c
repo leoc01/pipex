@@ -26,7 +26,7 @@ int	main(int argc, char **argv, char **envp)
 	stream_out = open(argv[1], O_RDONLY);
 	while (cmd_count > 1)
 		stream_out = run_cmd(argv[argc - 1 - cmd_count--], envp, 0, stream_out);
-	outfile = open(argv[argc - 1], O_CREAT | O_WRONLY | O_TRUNC, 0644);
+	outfile = open(argv[argc - 1], O_CREAT | O_WRONLY | O_TRUNC, 0664);
 	(void)run_cmd(argv[argc - 1 - cmd_count], envp, outfile, stream_out);
 	close(outfile);
 	while (wait(&status) >= 0)
