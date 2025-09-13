@@ -15,21 +15,28 @@
 int	main(int argc, char **argv, char **envp)
 {
 	int		cmd_count;
-	int		stream_out;
 	int		outfile;
-	int		status;
-	int		status_code;
+	int		i;
+	int		exit_code;
+	t_proc	*child;
 
 	if (argc != 5)
 		return (0);
 	cmd_count = argc - 3;
-	stream_out = open(argv[1], O_RDONLY);
-	while (cmd_count > 1)
-		stream_out = run_cmd(argv[argc - 1 - cmd_count--], envp, 0, stream_out);
+	child = ft_calloc(cmd_count, sizeof(t_proc));
+	if (!child)
+		return (1);
+	child[0].stream_in = open(argv[1], O_RDONLY);
+	i = -1;
+	while (++i + 1 < cmd_count)
+		child[i + 1].stream_in = run_cmd(argv[2 + i], envp, 0, &child[i]);
 	outfile = open(argv[argc - 1], O_CREAT | O_WRONLY | O_TRUNC, 0664);
-	(void)run_cmd(argv[argc - 1 - cmd_count], envp, outfile, stream_out);
+	(void)run_cmd(argv[2 + i], envp, outfile, &child[i]);
 	close(outfile);
-	while (wait(&status) >= 0)
-		status_code = WEXITSTATUS(status);
-	return (status_code);
+	i = 0;
+	while (++i < cmd_count)
+		waitpid(child[i].pid, &child[i].status, 0);
+	exit_code = WEXITSTATUS(child[i].status);
+	free(child);
+	return (exit_code);
 }

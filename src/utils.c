@@ -12,26 +12,25 @@
 
 #include <pipex.h>
 
-int	run_cmd(char *cmd_string, char **envp, int stream_in, int stream_out)
+int	run_cmd(char *cmd_string, char **envp, int stream_out, t_proc *child)
 {
 	char	*pathname;
 	char	**cmd;
 	int		pipe_fd[2];
-	int		pid;
 	int		stdout_o;
 
-	init_pipe(pipe_fd, stream_in);
-	pid = fork();
-	if (pid == 0)
+	init_pipe(pipe_fd, stream_out);
+	child->pid = fork();
+	if (child->pid == 0)
 	{
-		dup2(stream_out, 0);
-		close(stream_out);
+		dup2(child->stream_in, 0);
+		close(child->stream_in);
 		cmd = ft_split(cmd_string, ' ');
 		pathname = find_path(cmd[0], envp);
 		stdout_o = dup(1);
-		if (!stream_in)
-			stream_in = pipe_fd[1];
-		dup2(stream_in, 1);
+		if (!stream_out)
+			stream_out = pipe_fd[1];
+		dup2(stream_out, 1);
 		close_pipe(pipe_fd, 2);
 		execve(pathname, cmd, envp);
 		throw_error(127, cmd[0], stdout_o);
