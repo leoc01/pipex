@@ -12,7 +12,7 @@
 
 #include <pipex.h>
 
-int	run_cmd(char *cmd_string, char **envp, int stream_out, t_proc *child)
+int	run_cmd(char *cmd_string, char **envp, int stream_out, t_proc *command)
 {
 	char	*pathname;
 	char	**cmd;
@@ -20,22 +20,24 @@ int	run_cmd(char *cmd_string, char **envp, int stream_out, t_proc *child)
 	int		stdout_o;
 
 	init_pipe(pipe_fd, stream_out);
-	child->pid = fork();
-	if (child->pid == 0)
+	command->pid = fork();
+	if (command->pid == 0)
 	{
-		dup2(child->stream_in, 0);
-		close(child->stream_in);
+		dup2(command->stream_in, 0);
+		close(command->stream_in);
 		cmd = ft_split(cmd_string, ' ');
 		pathname = find_path(cmd[0], envp);
-		stdout_o = dup(1);
 		if (!stream_out)
 			stream_out = pipe_fd[1];
+		stdout_o = dup(1);
 		dup2(stream_out, 1);
 		close_pipe(pipe_fd, 2);
-		execve(pathname, cmd, envp);
-		throw_error(127, cmd[0], stdout_o);
+		if (command->stream_in >= 0)
+			execve(pathname, cmd, envp);
+		throw_error(cmd[0], stdout_o);
 	}
-	close(stream_out);
+	if (stream_out)
+		close(stream_out);
 	close_pipe(pipe_fd, 1);
 	return (pipe_fd[0]);
 }
@@ -53,16 +55,14 @@ char	*find_path(char *cmd, char **envp)
 	if (!envp[i])
 		return (NULL);
 	path = ft_split(&envp[i][5], ':');
-	right_path = ft_strjoin(path[0], "/");
-	pathname = ft_strjoin(right_path, cmd);
-	free(right_path);
-	i = 0;
-	while (path[i] && access(pathname, X_OK) != 0)
+	i = -1;
+	while (path[++i])
 	{
 		right_path = ft_strjoin(path[i], "/");
 		pathname = ft_strjoin(right_path, cmd);
 		free(right_path);
-		i++;
+		if (access(pathname, X_OK) == 0)
+			break;
 	}
 	return (pathname);
 }
@@ -83,9 +83,10 @@ void	close_pipe(int pipe_fd[2], int option)
 		close(pipe_fd[1]);
 }
 
-void	throw_error(int exit_code, char *cmd, int stdout_o)
+void	throw_error(char *cmd, int stdout_o)
 {
 	dup2(stdout_o, 1);
-	ft_printf("pipex: command not found: %s\n", cmd);
-	exit(exit_code);
+	ft_printf("%d\n", errno);
+	ft_printf("pipex: %s: command not found\n", cmd);
+	exit(127);
 }

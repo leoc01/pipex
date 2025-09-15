@@ -30,6 +30,6 @@ int		run_cmd(char *cmd_string, char **envp, int stream_out, t_proc *child);
 char	*find_path(char *cmd, char **envp);
 void	init_pipe(int *pipe_fd, int file);
 void	close_pipe(int pipe_fd[2], int option);
-void	throw_error(int exit_code, char *cmd, int stdout_o);
+void	throw_error(char *cmd, int stdout_o);
 
 #endif
