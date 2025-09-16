@@ -1,7 +1,7 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_putint.c                                     :+:      :+:    :+:   */
+/*   ft_putnbr_fd.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: lbuscaro <lbuscaro@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
@@ -12,28 +12,20 @@
 
 #include "libft.h"
 
-size_t	ft_putint(int n)
+size_t	ft_putaddr_fd(unsigned long int n, int fd)
 {
-	int	i;
+	size_t	i;
 
 	i = 0;
-	if (n >= 0)
-	{
-		if (n >= 10)
-		{
-			i += ft_putint(n / 10);
-		}
-		i += ft_putchar(n % 10 + '0');
-	}
-	else if (n == INT_MIN)
-	{
-		ft_putstr("-2147483648");
-		i = 11;
-	}
+	if (n == 0)
+		return (ft_putstr_fd("(nil)", fd));
+	if (n >= 16)
+		i += ft_putaddr_fd(n / 16, fd);
 	else
-	{
-		i += ft_putchar('-');
-		i += ft_putint(n * -1);
-	}
+		i += ft_putstr_fd("0x", fd);
+	if ((n % 16) < 10)
+		i += ft_putchar_fd(n % 16 + '0', fd);
+	else if ((n % 16) < 16)
+		i += ft_putchar_fd(n % 16 + 'a' - 10, fd);
 	return (i);
 }

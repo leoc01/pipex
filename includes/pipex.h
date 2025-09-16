@@ -21,15 +21,17 @@
 
 typedef struct s_proc
 {
-	int	pid;
-	int	stream_in;
-	int	status;
+	int		pid;
+	int		stream_in;
+	char	*pathname;
+	char	**av;
+	int		status;
 }	t_proc;
 
 int		run_cmd(char *cmd_string, char **envp, int stream_out, t_proc *child);
 char	*find_path(char *cmd, char **envp);
 void	init_pipe(int *pipe_fd, int file);
 void	close_pipe(int pipe_fd[2], int option);
-void	throw_error(char *cmd, int stdout_o);
+void	throw_error(t_proc *command, int stdout_o);
 
 #endif

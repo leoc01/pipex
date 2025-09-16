@@ -84,12 +84,11 @@ void		ft_lstclear(t_list **lst, void (*del)(void *));
 void		ft_lstiter(t_list *lst, void (*f)(void *));
 t_list		*ft_lstmap(t_list *lst, void *(*f)(void *), void (*del)(void *));
 
+size_t		ft_putint_fd(int n, int fd);
+size_t		ft_putaddr_fd(unsigned long int n, int fd);
+size_t		ft_putuint_fd(unsigned int n, char *base, int fd);
 int			ft_printf(const char *str, ...);
-size_t		ft_putchar(char c);
-size_t		ft_putstr(char *s);
-size_t		ft_putint(int n);
-size_t		ft_putaddr(unsigned long int n);
-size_t		ft_putuint(unsigned int n, char *base);
+int			ft_fprintf(int fd, const char *str, ...);
 
 t_gnlist	*new_list(char *buffer, int r_buffer);
 t_gnlist	*list_last(t_gnlist *buffer_list);

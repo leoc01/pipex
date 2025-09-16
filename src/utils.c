@@ -14,8 +14,6 @@
 
 int	run_cmd(char *cmd_string, char **envp, int stream_out, t_proc *command)
 {
-	char	*pathname;
-	char	**cmd;
 	int		pipe_fd[2];
 	int		stdout_o;
 
@@ -25,16 +23,16 @@ int	run_cmd(char *cmd_string, char **envp, int stream_out, t_proc *command)
 	{
 		dup2(command->stream_in, 0);
 		close(command->stream_in);
-		cmd = ft_split(cmd_string, ' ');
-		pathname = find_path(cmd[0], envp);
+		command->av = ft_split(cmd_string, ' ');
+		command->pathname = find_path(command->av[0], envp);
 		if (!stream_out)
 			stream_out = pipe_fd[1];
 		stdout_o = dup(1);
 		dup2(stream_out, 1);
 		close_pipe(pipe_fd, 2);
 		if (command->stream_in >= 0)
-			execve(pathname, cmd, envp);
-		throw_error(cmd[0], stdout_o);
+			execve(command->pathname, command->av, envp);
+		throw_error(command, stdout_o);
 	}
 	close(command->stream_in);
 	close_pipe(pipe_fd, 1);
@@ -61,7 +59,7 @@ char	*find_path(char *cmd, char **envp)
 		pathname = ft_strjoin(right_path, cmd);
 		free(right_path);
 		if (access(pathname, X_OK) == 0)
-			break;
+			break ;
 	}
 	return (pathname);
 }
@@ -82,10 +80,9 @@ void	close_pipe(int pipe_fd[2], int option)
 		close(pipe_fd[1]);
 }
 
-void	throw_error(char *cmd, int stdout_o)
+void	throw_error(t_proc *command, int stdout_o)
 {
-	dup2(stdout_o, 1);
-	ft_printf("%d\n", errno);
-	ft_printf("pipex: %s: command not found\n", cmd);
+	(void)stdout_o;
+	ft_fprintf(2, "pipex: %s: command not found\n", command->av[0]);
 	exit(127);
 }

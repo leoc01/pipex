@@ -10,11 +10,11 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <libft.h>
+#include "libft.h"
 
-static int	ft_putarg(char format, va_list list);
+static int	ft_fputarg(int fd, char format, va_list list);
 
-int	ft_printf(const char *str, ...)
+int	ft_fprintf(int fd, const char *str, ...)
 {
 	va_list	list;
 	size_t	ln;
@@ -24,35 +24,35 @@ int	ft_printf(const char *str, ...)
 	while (*str)
 	{
 		if (*str != '%')
-			ln += ft_putchar_fd(*str, 1);
+			ln += ft_putchar_fd(*str, fd);
 		else
-			ln += ft_putarg(*(++str), list);
+			ln += ft_fputarg(fd, *(++str), list);
 		str++;
 	}
 	va_end(list);
 	return (ln);
 }
 
-static int	ft_putarg(char format, va_list lst)
+static int	ft_fputarg(int fd, char format, va_list lst)
 {
 	size_t	ln;
 
 	ln = 0;
 	if (format == 'c')
-		ln += ft_putchar_fd(va_arg(lst, int), 1);
+		ln += ft_putchar_fd(va_arg(lst, int), fd);
 	else if (format == 's')
-		ln += ft_putstr_fd(va_arg(lst, char *), 1);
+		ln += ft_putstr_fd(va_arg(lst, char *), fd);
 	else if (format == 'p')
-		ln += ft_putaddr_fd(va_arg(lst, unsigned long int), 1);
+		ln += ft_putaddr_fd(va_arg(lst, unsigned long int), fd);
 	else if (format == 'd' || format == 'i')
-		ln += ft_putint_fd(va_arg(lst, int), 1);
+		ln += ft_putint_fd(va_arg(lst, int), fd);
 	else if (format == 'u')
-		ln += ft_putuint_fd(va_arg(lst, unsigned int), "0123456789", 1);
+		ln += ft_putuint_fd(va_arg(lst, unsigned int), "0123456789", fd);
 	else if (format == 'x')
-		ln += ft_putuint_fd(va_arg(lst, unsigned int), "0123456789abcdef", 1);
+		ln += ft_putuint_fd(va_arg(lst, unsigned int), "0123456789abcdef", fd);
 	else if (format == 'X')
-		ln += ft_putuint_fd(va_arg(lst, unsigned int), "0123456789ABCDEF", 1);
+		ln += ft_putuint_fd(va_arg(lst, unsigned int), "0123456789ABCDEF", fd);
 	else if (format == '%')
-		ln += ft_putchar_fd('%', 1);
+		ln += ft_putchar_fd('%', fd);
 	return (ln);
 }

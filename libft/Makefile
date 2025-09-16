@@ -65,12 +65,11 @@ SRC += ft_lstdelone.c
 SRC += ft_lstclear.c
 SRC += ft_lstiter.c
 SRC += ft_lstmap.c
+SRC += ft_putint_fd.c
+SRC += ft_putuint_fd.c
+SRC += ft_putaddr_fd.c
 SRC += ft_printf.c
-SRC += ft_putchar.c
-SRC += ft_putstr.c
-SRC += ft_putint.c
-SRC += ft_putaddr.c
-SRC += ft_putuint.c 
+SRC += ft_fprintf.c
 
 SRC := $(addprefix $(SRC_DIR)/,$(SRC))
 OBJS = $(SRC:$(SRC_DIR)/%.c=$(BUILD_DIR)/%.o)

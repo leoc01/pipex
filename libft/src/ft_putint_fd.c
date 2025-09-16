@@ -1,7 +1,7 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_putnbr.c                                     :+:      :+:    :+:   */
+/*   ft_putint.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: lbuscaro <lbuscaro@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
@@ -12,17 +12,28 @@
 
 #include "libft.h"
 
-size_t	ft_putuint(unsigned int n, char *base)
+size_t	ft_putint_fd(int n, int fd)
 {
-	size_t	div;
-	size_t	i;
+	int	i;
 
 	i = 0;
-	div = ft_strlen(base);
-	if (n >= div)
+	if (n >= 0)
 	{
-		i += ft_putuint(n / div, base);
+		if (n >= 10)
+		{
+			i += ft_putint_fd(n / 10, fd);
+		}
+		i += ft_putchar_fd(n % 10 + '0', fd);
 	}
-	i += ft_putchar(base[n % div]);
+	else if (n == INT_MIN)
+	{
+		ft_putstr_fd("-2147483648", fd);
+		i = 11;
+	}
+	else
+	{
+		i += ft_putchar_fd('-', fd);
+		i += ft_putint_fd(n * -1, fd);
+	}
 	return (i);
 }
