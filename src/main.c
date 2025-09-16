@@ -12,7 +12,7 @@
 
 #include <pipex.h>
 
-int	open_infile(char *file);
+static int	open_infile(char *file, t_proc *command);
 
 int	main(int argc, char **argv, char **envp)
 {
@@ -28,11 +28,11 @@ int	main(int argc, char **argv, char **envp)
 	command = ft_calloc(cmd_count, sizeof(t_proc));
 	if (!command)
 		return (1);
-	command[0].stream_in = open_infile(argv[1]);
+	command[0].stream_in = open_infile(argv[1], &command[0]);
 	i = -1;
-	outfile = open(argv[argc - 1], O_CREAT | O_WRONLY | O_TRUNC, 0664);
 	while (++i + 1 < cmd_count)
 		command[i + 1].stream_in = run_cmd(argv[2 + i], envp, 0, &command[i]);
+	outfile = open(argv[argc - 1], O_CREAT | O_WRONLY | O_TRUNC, 0664);
 	(void)run_cmd(argv[2 + i], envp, outfile, &command[i]);
 	i = -1;
 	while (++i < cmd_count)
@@ -43,25 +43,15 @@ int	main(int argc, char **argv, char **envp)
 	return (exit_code);
 }
 
-int	open_infile(char *file)
+static int	open_infile(char *file, t_proc *command)
 {
 	int	fd;
 
+	command->filename = file;
 	if (access(file, F_OK) == -1)
-	{
-		ft_printf("nao existe\n");
-		return (-2);
-	}
+		command->file_error = errno;
 	else if (access(file, R_OK) == -1)
-	{
-		ft_printf("nao pode\n");
-		return (-3);
-	}
+		command->file_error = errno;
 	fd = open(file, O_RDONLY);
-	if (fd == -1)
-	{
-		ft_printf("falha ao abrir\n");
-		return (-1);
-	}
 	return (fd);
 }

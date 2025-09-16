@@ -15,7 +15,6 @@
 int	run_cmd(char *cmd_string, char **envp, int stream_out, t_proc *command)
 {
 	int		pipe_fd[2];
-	int		stdout_o;
 
 	init_pipe(pipe_fd, stream_out);
 	command->pid = fork();
@@ -23,26 +22,53 @@ int	run_cmd(char *cmd_string, char **envp, int stream_out, t_proc *command)
 	{
 		dup2(command->stream_in, 0);
 		close(command->stream_in);
-		command->av = ft_split(cmd_string, ' ');
-		command->pathname = find_path(command->av[0], envp);
+		init_command(command, cmd_string, envp);
 		if (!stream_out)
 			stream_out = pipe_fd[1];
-		stdout_o = dup(1);
 		dup2(stream_out, 1);
 		close_pipe(pipe_fd, 2);
-		if (command->stream_in >= 0)
-			execve(command->pathname, command->av, envp);
-		throw_error(command, stdout_o);
+		if (command->stream_in < 0)
+			throw_error(command);
+		execve(command->pathname, command->av, envp);
+		throw_error(command);
 	}
 	close(command->stream_in);
 	close_pipe(pipe_fd, 1);
 	return (pipe_fd[0]);
 }
 
+void	init_command(t_proc *command, char *cmd_string, char **envp)
+{
+	command->av = ft_split(cmd_string, ' ');
+	command->pathname = find_path(command->av[0], envp);
+	if (access(command->pathname, F_OK) == -1)
+		command->cmd_error = errno;
+	else if (access(command->pathname, X_OK) == -1)
+		command->cmd_error = errno;
+}
+
+char	*get_pathname(char *cmd, char **path)
+{
+	char	*right_path;
+	char	*pathname;
+	int		i;
+	
+	i = -1;
+	while (path[++i])
+	{
+		right_path = ft_strjoin(path[i], "/");
+		pathname = ft_strjoin(right_path, cmd);
+		free(right_path);
+		if (access(pathname, X_OK) == 0)
+			break ;
+		free(pathname);
+	}
+	return (pathname);
+}
+
 char	*find_path(char *cmd, char **envp)
 {
 	char	**path;
-	char	*right_path;
 	char	*pathname;
 	int		i;
 
@@ -52,14 +78,12 @@ char	*find_path(char *cmd, char **envp)
 	if (!envp[i])
 		return (NULL);
 	path = ft_split(&envp[i][5], ':');
-	i = -1;
-	while (path[++i])
+	pathname = get_pathname(cmd, path[0]);
+	i = 1;
+	while (path[i] && access(pathname, X_OK) == -1)
 	{
-		right_path = ft_strjoin(path[i], "/");
-		pathname = ft_strjoin(right_path, cmd);
-		free(right_path);
-		if (access(pathname, X_OK) == 0)
-			break ;
+		free(pathname);
+		pathname = get_pathname(cmd, path[i++]);
 	}
 	return (pathname);
 }
@@ -80,9 +104,15 @@ void	close_pipe(int pipe_fd[2], int option)
 		close(pipe_fd[1]);
 }
 
-void	throw_error(t_proc *command, int stdout_o)
+void	throw_error(t_proc *command)
 {
-	(void)stdout_o;
-	ft_fprintf(2, "pipex: %s: command not found\n", command->av[0]);
-	exit(127);
+	if (command->stream_in < 0)
+		ft_fprintf(2, "pipex: %s: %s\n", command->filename, strerror(command->file_error));
+	else
+	{
+		ft_fprintf(2, "pipex: %s: %s\n", command->av[0], strerror(command->cmd_error));
+	}
+//	if (command->stream_in == FO_KO)
+//		ft_fprintf(2, "pipex: %s: No such file or directory\n", command->filename);
+	exit(1);
 }
