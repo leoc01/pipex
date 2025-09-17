@@ -6,7 +6,7 @@
 #    By: lbuscaro <lbuscaro@student.42porto.com>    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/08/08 17:52:50 by lbuscaro          #+#    #+#              #
-#    Updated: 2025/09/03 12:12:12 by lbuscaro         ###   ########.fr        #
+#    Updated: 2025/09/17 19:17:15 by lbuscaro         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -28,6 +28,7 @@ M_MAIN = $(SRC_DIR)/main.c
 M_MAIN_OBJ = $(BUILD_DIR)/main.o
 
 M_SRC = utils.c
+M_SRC += command.c
 M_SRC := $(addprefix $(SRC_DIR)/,$(M_SRC))
 M_OBJ = $(M_SRC:$(SRC_DIR)/%.c=$(BUILD_DIR)/%.o)
 

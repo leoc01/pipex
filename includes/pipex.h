@@ -32,8 +32,8 @@ typedef struct s_proc
 	char	**av;
 	int		cmd_error;
 	int		stream_in;
-	char	*filename;
-	int		file_error;
+	char	*f_name;
+	int		f_err;
 	int		status;
 }	t_proc;
 
@@ -41,7 +41,7 @@ int		run_cmd(char *cmd_string, char **envp, int stream_out, t_proc *child);
 
 void	init_pipe(int *pipe_fd, int file);
 void	close_pipe(int pipe_fd[2], int option);
-
-void	throw_error(t_proc *command);
+void	throw_error(t_proc *command, int i);
+void	free_split(char **str_array);
 
 #endif
