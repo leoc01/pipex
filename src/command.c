@@ -37,9 +37,9 @@ int	run_cmd(char *cmd_string, char **envp, int stream_out, t_proc *command)
 		execve(command[i].pathname, command[i].av, envp);
 		throw_error(command, i);
 	}
-	i++;
-	close(command->stream_in);
+	close(command[i].stream_in);
 	close_pipe(pipe_fd, 1);
+	i++;
 	return (pipe_fd[0]);
 }
 

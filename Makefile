@@ -11,7 +11,6 @@
 # **************************************************************************** #
 
 NAME = pipex
-BONUS_NAME = pipex
 
 CC = cc
 CFLAGS = -Wall -Werror -Wextra
@@ -67,7 +66,7 @@ re: fclean all
 bonus: $(BONUS_STATUS)
 
 $(BONUS_STATUS): $(NAME) $(B_OBJ) $(B_MAIN_OBJ)
-	$(CC) $(CFLAGS) $(M_OBJ) $(B_OBJ) $(B_MAIN_OBJ) -Llibft -lft -o $(BONUS_NAME)
+	$(CC) $(CFLAGS) $(M_OBJ) $(B_OBJ) $(B_MAIN_OBJ) -Llibft -lft -o $(NAME)
 	@mkdir -p $(BONUS_STATUS)
 
 gdb: all

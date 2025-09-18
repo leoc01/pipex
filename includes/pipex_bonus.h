@@ -15,6 +15,6 @@
 
 # include <pipex.h>
 
-char	*bonus(void);
+int	heredoc(char *limiter);
 
 #endif
