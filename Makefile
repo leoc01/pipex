@@ -63,7 +63,7 @@ fclean: clean
 
 re: fclean all
 
-bonus: $(BONUS_STATUS)
+bonus: $(BONUS_STATUS) $(B_OBJ) $(B_MAIN_OBJ) $(LFT) $(M_OBJ)
 
 $(BONUS_STATUS): $(NAME) $(B_OBJ) $(B_MAIN_OBJ)
 	$(CC) $(CFLAGS) $(M_OBJ) $(B_OBJ) $(B_MAIN_OBJ) -Llibft -lft -o $(NAME)

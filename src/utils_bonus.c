@@ -17,20 +17,24 @@ int	heredoc(char *limiter)
 	char	*line;
 	char	*n_limiter;
 	int		lim_len;
-	int		heredoc;
+	int		heredoc_f;
 
-	heredoc = open("heredoc", O_CREAT | O_RDWR | O_TRUNC, 0600);
-	if (heredoc != -1)
-		unlink("heredoc");
+	heredoc_f = open("heredoc", O_CREAT | O_RDWR | O_TRUNC, 0600);
 	n_limiter = ft_strjoin(limiter, "\n");
 	lim_len = ft_strlen(n_limiter);
 	ft_printf("pipe heredoc>");
-	line = get_next_line(1);
+	line = get_next_line(0);
 	while (line && strncmp(n_limiter, line, lim_len))
 	{
-		write(heredoc, line, ft_strlen(line));
+		write(heredoc_f, line, ft_strlen(line));
+		free(line);
 		ft_printf("pipe heredoc>");
-		line = get_next_line(1);
+		line = get_next_line(0);
 	}
-	return (heredoc);
+	free(line);
+	free(n_limiter);
+	close(heredoc_f);
+	heredoc_f = open("heredoc", O_RDONLY);
+	unlink("heredoc");
+	return (heredoc_f);
 }
